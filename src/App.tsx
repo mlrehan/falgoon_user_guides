@@ -22,7 +22,8 @@ import {
   ExternalLink, 
   ShieldCheck, 
   Heart, 
-  ArrowUp
+  ArrowUp,
+  Bot
 } from 'lucide-react';
 
 type TabType = 'hub' | 'docs' | 'ops' | 'troubleshoot' | 'glossary' | 'gallery';
@@ -38,7 +39,8 @@ function AppContent() {
     searchOpen, 
     setSearchOpen,
     isAdminMode,
-    setIsAdminMode
+    setIsAdminMode,
+    setIsSimulatorOpen
   } = useDocs();
 
   const [currentTab, setCurrentTab] = useState<TabType>('hub');
@@ -194,16 +196,32 @@ function AppContent() {
       <MediaLightboxModal />
       <ChatbotSimulatorModal />
 
-      {/* Floating Scroll to Top button */}
-      {showScrollTop && (
+      {/* Floating Buttons: AI Assistant and Back-to-Top */}
+      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-end gap-2.5">
+        {/* Floating Scroll to Top button */}
+        {showScrollTop && (
+          <button
+            onClick={scrollToTop}
+            className="p-3 rounded-full bg-slate-900 text-white shadow-xl hover:bg-slate-800 transition-all animate-in fade-in cursor-pointer border border-slate-700"
+            title="Scroll to Top"
+          >
+            <ArrowUp className="w-4 h-4" />
+          </button>
+        )}
+
+        {/* Floating AI Assistant Trigger Button */}
         <button
-          onClick={scrollToTop}
-          className="fixed bottom-6 right-6 p-3 rounded-full bg-slate-900 text-white shadow-xl hover:bg-teal-600 transition-all z-40 animate-in fade-in cursor-pointer"
-          title="Scroll to Top"
+          onClick={() => setIsSimulatorOpen(true)}
+          className="flex items-center gap-2.5 px-4 py-3 rounded-full bg-teal-700 hover:bg-teal-800 text-white shadow-2xl transition-all group cursor-pointer border-2 border-white ring-4 ring-teal-500/20 hover:scale-105 active:scale-95"
+          title="Open Falgoon AI Assistant (Grounded in Website Knowledge Base)"
         >
-          <ArrowUp className="w-5 h-5" />
+          <div className="relative">
+            <Bot className="w-5 h-5 text-white" />
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 absolute -top-0.5 -right-0.5 ring-2 ring-teal-700 animate-pulse" />
+          </div>
+          <span className="font-bold text-xs">Ask AI Assistant</span>
         </button>
-      )}
+      </div>
 
       {/* Enterprise Footer */}
       <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 text-xs">
@@ -222,7 +240,7 @@ function AppContent() {
               </p>
               <div className="mt-4 flex items-center gap-2 text-[11px] text-slate-500">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Enterprise Verified • Direct URL Slugs Enabled</span>
+                <span>Enterprise Verified • AI Knowledge Base Synced</span>
               </div>
             </div>
 
@@ -335,17 +353,17 @@ function AppContent() {
             {/* Col 4: Beginner Assistance */}
             <div>
               <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">
-                Sharing &amp; Linking
+                Live AI Assistant
               </h4>
               <p className="text-xs text-slate-400 leading-relaxed mb-3">
-                Every software application has a permanent slug link (e.g. <code className="text-teal-400">/?app=nursery-admin</code>) ready to pass directly to users or embed on external websites.
+                Ask our AI chatbot any question about your software portals. It is grounded strictly in this website's documentation and cites verified chapters.
               </p>
               <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
-                <span className="text-[11px] font-semibold text-amber-400 block mb-1">
-                  Share Any Specific Chapter
+                <span className="text-[11px] font-semibold text-teal-400 block mb-1">
+                  Dynamic Knowledge Base
                 </span>
                 <span className="text-[11px] text-slate-300">
-                  Open any guide and click "Share Article" to get a direct URL straight to that step-by-step resolution.
+                  When you add, update, or delete any user guide in the Admin CMS, the AI assistant reflects the changes immediately.
                 </span>
               </div>
             </div>

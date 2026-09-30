@@ -307,9 +307,9 @@ Your documentation portal is now live at `http://docs.yourdomain.com`!
 
 ---
 
-### 2.6 Production Serving Option B: PM2 + Preview / Node Server
+### 2.6 Production Serving Option B: PM2 + Full-Stack Express Server (Recommended for AI Chatbot)
 
-If you prefer running a Node process manager or plan to attach backend Express API routes:
+To support the live AI Chatbot endpoint (`/api/chat`) and dynamic grounded answering:
 
 #### Step 1: Install PM2 globally
 ```bash
@@ -323,11 +323,13 @@ module.exports = {
   apps: [
     {
       name: 'falgoon-docs',
-      script: 'node_modules/vite/bin/vite.js',
-      args: 'preview --port 3000 --host 0.0.0.0',
+      script: 'node_modules/tsx/dist/cli.mjs',
+      args: 'server.ts',
       cwd: '/var/www/falgoon-docs',
       env: {
-        NODE_ENV: 'production'
+        NODE_ENV: 'production',
+        PORT: 3000,
+        GEMINI_API_KEY: 'YOUR_GEMINI_API_KEY_HERE'
       },
       instances: 1,
       autorestart: true,
@@ -339,10 +341,14 @@ module.exports = {
 
 #### Step 3: Start and Save PM2 Service
 ```bash
+# 1. Build the frontend bundle
+npm run build
+
+# 2. Launch server with PM2
 pm2 start ecosystem.config.cjs
 pm2 save
 
-# Enable automatic start on server reboot
+# 3. Enable automatic start on server reboot
 pm2 startup systemd
 # Copy-paste the 'sudo env PATH=...' line that PM2 outputs
 ```
@@ -352,6 +358,7 @@ In `/etc/nginx/sites-available/falgoon-docs`:
 ```nginx
 server {
     listen 80;
+    listen [::]:80;
     server_name docs.yourdomain.com;
 
     location / {
@@ -369,7 +376,7 @@ server {
 ```
 Reload Nginx:
 ```bash
-sudo systemctl reload nginx
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ---
