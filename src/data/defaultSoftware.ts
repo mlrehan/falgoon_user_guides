@@ -3,6 +3,7 @@ import { SoftwareApp } from '../types/docs';
 export const INITIAL_SOFTWARE_APPS: SoftwareApp[] = [
   {
     id: 'falgoon-admin',
+    slug: 'nursery-admin',
     name: 'Falgoon Nursery Admin System',
     shortName: 'Admin System',
     portalUrl: 'https://nursery-admin1.falgoon.co.uk',
@@ -24,6 +25,7 @@ export const INITIAL_SOFTWARE_APPS: SoftwareApp[] = [
   },
   {
     id: 'falgoon-parent',
+    slug: 'parent-portal',
     name: 'Falgoon Nursery Parent Portal',
     shortName: 'Parent Portal',
     portalUrl: 'https://nursery1.falgoon.co.uk/',
@@ -42,6 +44,7 @@ export const INITIAL_SOFTWARE_APPS: SoftwareApp[] = [
   },
   {
     id: 'falgoon-exec',
+    slug: 'executive-portal',
     name: 'Falgoon Executive Nursery Portal',
     shortName: 'Executive Portal',
     portalUrl: 'https://nursery.falgoon.co.uk/m/executive',
@@ -60,6 +63,7 @@ export const INITIAL_SOFTWARE_APPS: SoftwareApp[] = [
   },
   {
     id: 'falgoon-corp',
+    slug: 'corporate-website',
     name: 'Falgoon Corporate Website',
     shortName: 'Corporate Website',
     portalUrl: 'https://www.falgoon.com/',

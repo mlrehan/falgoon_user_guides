@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Article, ArticleContentBlock, Callout } from '../types/docs';
 import { useDocs } from '../context/DocsContext';
 import { VisualScreenshotCard } from './VisualScreenshotCard';
+import { ShareGuideModal } from './ShareGuideModal';
+import { getGuideShareUrls, copyToClipboard } from '../utils/urlRouter';
 import { 
   CheckCircle2, 
   Clock, 
@@ -19,7 +21,8 @@ import {
   ArrowRight,
   ExternalLink,
   Copy,
-  Check
+  Check,
+  Link2
 } from 'lucide-react';
 
 interface ArticleRendererProps {
@@ -41,12 +44,22 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({
   } = useDocs();
 
   const [copiedLink, setCopiedLink] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [rated, setRated] = useState<'helpful' | 'unhelpful' | null>(null);
 
   const software = softwareApps.find((s) => s.id === article.softwareId);
   const category = categories.find((c) => c.id === article.categoryId);
 
-  const handleCopyLink = () => {
+  const handleCopyLink = async () => {
+    if (software) {
+      const { primaryUrl } = getGuideShareUrls(software, article);
+      const ok = await copyToClipboard(primaryUrl);
+      if (ok) {
+        setCopiedLink(true);
+        setTimeout(() => setCopiedLink(false), 2000);
+        return;
+      }
+    }
     navigator.clipboard.writeText(window.location.href);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
@@ -424,9 +437,18 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({
             <button
               onClick={handleCopyLink}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Copy direct shareable link for this specific article"
             >
               {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-slate-500" />}
-              <span>{copiedLink ? 'Copied Link!' : 'Copy Link'}</span>
+              <span>{copiedLink ? 'Copied Article Link!' : 'Copy Link'}</span>
+            </button>
+            <button
+              onClick={() => setIsShareModalOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-50 hover:bg-teal-100 border border-teal-200 text-xs font-bold text-teal-800 transition-colors cursor-pointer"
+              title="Email or share direct link to this guide"
+            >
+              <Share2 className="w-3.5 h-3.5 text-teal-600" />
+              <span>Share Article</span>
             </button>
           </div>
 
@@ -517,6 +539,14 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({
             ))}
         </div>
       </footer>
+
+      {/* Share Modal */}
+      <ShareGuideModal
+        software={software || null}
+        article={article}
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+      />
     </article>
   );
 };

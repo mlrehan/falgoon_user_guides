@@ -530,6 +530,45 @@ Whenever you want to deploy updates, simply run:
 
 ---
 
+## Part 5: Dedicated Software User Guide Slugs (Email & External Website Linking)
+
+Every software application in the portal has a permanent, dedicated URL slug. You can pass these direct links in emails, share them in support tickets, or embed them into external software navigation bars.
+
+### 5.1 Standard Slugs for Default Falgoon Systems
+
+| Software Application | Portal Purpose | Dedicated Shareable Slug Link |
+|---|---|---|
+| **Falgoon Nursery Admin System** | Multi-Tenant AI Assistant & IAM | `https://your-domain.com/?app=nursery-admin` |
+| **Falgoon Nursery Parent Portal** | Daily logs, photo permissions, fees | `https://your-domain.com/?app=parent-portal` |
+| **Falgoon Executive Nursery Portal** | Business intelligence & EYFS ratios | `https://your-domain.com/?app=executive-portal` |
+| **Falgoon Corporate Website** | Public admissions & nursery tours | `https://your-domain.com/?app=corporate-website` |
+
+*Note: Hash-based routing is also supported automatically on static hosts: `https://your-domain.com/#/guide/nursery-admin`.*
+
+### 5.2 Deep-Linking to Specific User Guide Chapters
+
+To email or link to an exact article (e.g. Chapter 7: Knowledge Bases or Chapter 8: Live Handoff):
+```text
+https://your-domain.com/?app=nursery-admin&article=art-knowledge-bases
+https://your-domain.com/?app=nursery-admin&article=art-chatbot
+https://your-domain.com/?app=parent-portal&article=art-parent-payments
+```
+
+### 5.3 One-Click Sharing in the Portal
+- **On the Homepage:** Every software card features a **"Share"** button and a **"Copy Link"** button that immediately copies the permanent slug URL.
+- **In the Documentation Reader:** Click **"Share Guide"** in the top bar, or click **"Share Article"** at the top of any walkthrough to copy the link or launch an email pre-filled with the guide title and URL.
+- **In the Admin CMS:** When adding a new software card, administrators can specify a custom slug (e.g., `/?app=staff-attendance`) which instantly becomes available across the web.
+
+### 5.4 External Website Embed Snippet
+To link to a software user guide directly from your corporate website or parent app header:
+```html
+<a href="https://your-domain.com/?app=nursery-admin" target="_blank" rel="noopener noreferrer">
+  📖 View Nursery Admin User Guide
+</a>
+```
+
+---
+
 ## Summary Checklist
 
 | Step | Local (VS Code) | Production (Ubuntu) |
@@ -539,6 +578,7 @@ Whenever you want to deploy updates, simply run:
 | **Run Command** | `npm run dev` | `npm run build` |
 | **Web Server** | Built-in Vite Dev Server | Nginx (`/var/www/falgoon-docs/dist`) |
 | **Port** | `http://localhost:3000` | Port 80 (HTTP) & 443 (HTTPS) |
+| **Slugs** | `/?app=nursery-admin` | `https://your-domain.com/?app=nursery-admin` |
 | **Security** | Local sandbox | Let's Encrypt SSL + UFW Firewall |
 
 For further technical support or questions regarding Falgoon nursery software integrations, consult the **System Glossary** or the **Troubleshooting Matrix** within the documentation hub.

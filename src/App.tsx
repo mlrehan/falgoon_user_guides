@@ -16,6 +16,7 @@ import { ScreenshotGalleryView } from './components/ScreenshotGalleryView';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { MediaLightboxModal } from './components/MediaLightboxModal';
 import { ChatbotSimulatorModal } from './components/ChatbotSimulatorModal';
+import { parseCurrentRoute, updateBrowserUrl } from './utils/urlRouter';
 import { 
   BookOpen, 
   ExternalLink, 
@@ -28,8 +29,12 @@ type TabType = 'hub' | 'docs' | 'ops' | 'troubleshoot' | 'glossary' | 'gallery';
 
 function AppContent() {
   const { 
+    softwareApps,
+    articles,
     selectedSoftwareId, 
     selectSoftware, 
+    selectedArticleId,
+    selectArticle,
     searchOpen, 
     setSearchOpen,
     isAdminMode,
@@ -38,6 +43,57 @@ function AppContent() {
 
   const [currentTab, setCurrentTab] = useState<TabType>('hub');
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // 1. Initial route check on page load: handles links opened from email or external websites
+  useEffect(() => {
+    const route = parseCurrentRoute(softwareApps, articles);
+    if (route.softwareId) {
+      selectSoftware(route.softwareId);
+      if (route.articleId) {
+        selectArticle(route.articleId);
+      }
+      setCurrentTab('docs');
+    } else if (route.tab) {
+      setCurrentTab(route.tab);
+    }
+  }, []);
+
+  // 2. Browser Back / Forward and Hash Navigation Listener
+  useEffect(() => {
+    const handleRouteChange = () => {
+      const route = parseCurrentRoute(softwareApps, articles);
+      if (route.softwareId) {
+        selectSoftware(route.softwareId);
+        if (route.articleId) {
+          selectArticle(route.articleId);
+        }
+        setCurrentTab('docs');
+      } else if (route.tab) {
+        setCurrentTab(route.tab);
+      } else {
+        setCurrentTab('hub');
+      }
+    };
+
+    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('hashchange', handleRouteChange);
+    return () => {
+      window.removeEventListener('popstate', handleRouteChange);
+      window.removeEventListener('hashchange', handleRouteChange);
+    };
+  }, [softwareApps, articles, selectSoftware, selectArticle]);
+
+  // 3. Keep Browser URL Address Bar synchronized with current software slug & article
+  useEffect(() => {
+    if (isAdminMode) return;
+    const currentSoftware = softwareApps.find((s) => s.id === selectedSoftwareId);
+    updateBrowserUrl(
+      currentTab === 'docs' ? currentSoftware : null,
+      currentTab === 'docs' ? selectedArticleId : null,
+      articles,
+      currentTab
+    );
+  }, [currentTab, selectedSoftwareId, selectedArticleId, softwareApps, articles, isAdminMode]);
 
   // If user selects software from hub, switch to docs
   useEffect(() => {
@@ -142,7 +198,7 @@ function AppContent() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 p-3 rounded-full bg-slate-900 text-white shadow-xl hover:bg-teal-600 transition-all z-40 animate-in fade-in"
+          className="fixed bottom-6 right-6 p-3 rounded-full bg-slate-900 text-white shadow-xl hover:bg-teal-600 transition-all z-40 animate-in fade-in cursor-pointer"
           title="Scroll to Top"
         >
           <ArrowUp className="w-5 h-5" />
@@ -166,7 +222,7 @@ function AppContent() {
               </p>
               <div className="mt-4 flex items-center gap-2 text-[11px] text-slate-500">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                <span>Enterprise Verified • Updated Daily</span>
+                <span>Enterprise Verified • Direct URL Slugs Enabled</span>
               </div>
             </div>
 
@@ -228,7 +284,7 @@ function AppContent() {
                 <li>
                   <button 
                     onClick={() => { setIsAdminMode(false); setCurrentTab('hub'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white transition-colors cursor-pointer"
                   >
                     Software Hub Grid
                   </button>
@@ -236,7 +292,7 @@ function AppContent() {
                 <li>
                   <button 
                     onClick={() => { setIsAdminMode(false); setCurrentTab('troubleshoot'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white transition-colors cursor-pointer"
                   >
                     Troubleshooting &amp; Fixes
                   </button>
@@ -244,7 +300,7 @@ function AppContent() {
                 <li>
                   <button 
                     onClick={() => { setIsAdminMode(false); setCurrentTab('ops'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white transition-colors cursor-pointer"
                   >
                     Daily Operations Checklist
                   </button>
@@ -252,7 +308,7 @@ function AppContent() {
                 <li>
                   <button 
                     onClick={() => { setIsAdminMode(false); setCurrentTab('glossary'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white transition-colors cursor-pointer"
                   >
                     System Glossary
                   </button>
@@ -260,7 +316,7 @@ function AppContent() {
                 <li>
                   <button 
                     onClick={() => { setIsAdminMode(false); setCurrentTab('gallery'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className="hover:text-white transition-colors"
+                    className="hover:text-white transition-colors cursor-pointer"
                   >
                     Screenshots &amp; UI Figures (38)
                   </button>
@@ -268,7 +324,7 @@ function AppContent() {
                 <li>
                   <button 
                     onClick={() => { setIsAdminMode(true); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                    className="text-amber-400 hover:text-amber-300 transition-colors font-semibold"
+                    className="text-amber-400 hover:text-amber-300 transition-colors font-semibold cursor-pointer"
                   >
                     Admin CMS &amp; Card Manager
                   </button>
@@ -279,17 +335,17 @@ function AppContent() {
             {/* Col 4: Beginner Assistance */}
             <div>
               <h4 className="text-white font-bold text-xs uppercase tracking-wider mb-3">
-                Need Support?
+                Sharing &amp; Linking
               </h4>
               <p className="text-xs text-slate-400 leading-relaxed mb-3">
-                If you ever get stuck or need permission changes, your organization tenant administrator can assist you right away.
+                Every software application has a permanent slug link (e.g. <code className="text-teal-400">/?app=nursery-admin</code>) ready to pass directly to users or embed on external websites.
               </p>
               <div className="bg-slate-800/80 p-3 rounded-xl border border-slate-700/60">
                 <span className="text-[11px] font-semibold text-amber-400 block mb-1">
-                  Pro-Tip for Administrators
+                  Share Any Specific Chapter
                 </span>
                 <span className="text-[11px] text-slate-300">
-                  Use the Admin CMS toggle in the top bar to add new software cards, create articles, or update versions dynamically.
+                  Open any guide and click "Share Article" to get a direct URL straight to that step-by-step resolution.
                 </span>
               </div>
             </div>

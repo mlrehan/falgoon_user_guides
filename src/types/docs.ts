@@ -86,6 +86,7 @@ export interface Category {
 
 export interface SoftwareApp {
   id: string;
+  slug?: string;
   name: string;
   shortName: string;
   portalUrl: string;
