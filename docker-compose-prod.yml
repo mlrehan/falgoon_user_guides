@@ -1,0 +1,15 @@
+services:
+  falgoon-user-guides:
+    container_name: falgoon-user-guides-prod
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:3121:80"
+
+    environment:
+      NODE_ENV: production
