@@ -1,0 +1,6 @@
+{
+  "name": "Falgoon Software Documentation & User Guide Hub",
+  "description": "Enterprise-grade, beginner-friendly documentation portal and step-by-step user guides across Falgoon software applications, with visual walkthroughs and dynamic guide management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
