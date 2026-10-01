@@ -11,6 +11,7 @@ export interface InstructionStep {
   title: string;
   instruction: string;
   screenshotId?: string;
+  imageUrl?: string;
   caption?: string;
   callout?: Callout;
 }
@@ -36,7 +37,7 @@ export interface CardItem {
 
 export interface ArticleContentBlock {
   id: string;
-  type: 'paragraph' | 'steps' | 'callout' | 'table' | 'cards' | 'screenshot' | 'video' | 'worked-example';
+  type: 'paragraph' | 'steps' | 'callout' | 'table' | 'cards' | 'screenshot' | 'image' | 'video' | 'worked-example';
   title?: string;
   lead?: string;
   body?: string;
@@ -45,6 +46,7 @@ export interface ArticleContentBlock {
   table?: TableData;
   cards?: CardItem[];
   screenshotId?: string;
+  imageUrl?: string;
   caption?: string;
   videoUrl?: string;
   videoTitle?: string;

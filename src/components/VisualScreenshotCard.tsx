@@ -24,19 +24,35 @@ import {
 } from 'lucide-react';
 
 interface VisualScreenshotCardProps {
-  screenshotId: string;
+  screenshotId?: string;
+  imageUrl?: string;
   caption?: string;
 }
 
 export const VisualScreenshotCard: React.FC<VisualScreenshotCardProps> = ({ 
   screenshotId, 
+  imageUrl,
   caption 
 }) => {
   const { mediaAssets, openScreenshot } = useDocs();
-  const asset = mediaAssets.find((m) => m.id === screenshotId);
+  const asset = screenshotId ? mediaAssets.find((m) => m.id === screenshotId) : undefined;
+  const effectiveImage = imageUrl || (screenshotId?.startsWith('http') || screenshotId?.startsWith('data:') ? screenshotId : null);
 
   // Render simulated UI representation of the actual screenshot
   const renderSimulatedScreen = () => {
+    if (effectiveImage) {
+      return (
+        <div className="bg-slate-950 p-2 flex items-center justify-center min-h-[220px]">
+          <img 
+            src={effectiveImage} 
+            alt={caption || asset?.title || 'User guide illustration'} 
+            className="max-h-[500px] w-auto max-w-full mx-auto object-contain rounded-lg shadow-sm"
+            loading="lazy"
+          />
+        </div>
+      );
+    }
+
     switch (screenshotId) {
       case '01-login':
         return (

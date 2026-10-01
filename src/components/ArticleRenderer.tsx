@@ -18,6 +18,7 @@ import {
   ShieldCheck, 
   AlertOctagon,
   Play,
+  Video,
   ArrowRight,
   ExternalLink,
   Copy,
@@ -175,6 +176,68 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({
     }
   };
 
+  const renderVideoBlock = (block: ArticleContentBlock) => {
+    if (!block.videoUrl) return null;
+    const url = block.videoUrl.trim();
+
+    // Support YouTube, Loom, Vimeo, and direct MP4/WebM
+    let embedUrl = '';
+    const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]+)/i);
+    const loomMatch = url.match(/loom\.com\/(?:share|embed)\/([\w-]+)/i);
+    const vimeoMatch = url.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+
+    if (ytMatch && ytMatch[1]) {
+      embedUrl = `https://www.youtube-nocookie.com/embed/${ytMatch[1]}`;
+    } else if (loomMatch && loomMatch[1]) {
+      embedUrl = `https://www.loom.com/embed/${loomMatch[1]}`;
+    } else if (vimeoMatch && vimeoMatch[1]) {
+      embedUrl = `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+
+    return (
+      <figure key={block.id} className="my-8 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between text-xs text-slate-300">
+          <div className="flex items-center gap-2">
+            <Video className="w-4 h-4 text-rose-400" />
+            <span className="font-semibold text-white">
+              {block.videoTitle || 'Video Walkthrough & Tutorial'}
+            </span>
+          </div>
+          <span className="text-[10px] text-teal-300 bg-teal-900/80 border border-teal-500/30 px-2 py-0.5 rounded font-mono font-bold">
+            Interactive Video
+          </span>
+        </div>
+
+        <div className="aspect-video w-full bg-black flex items-center justify-center">
+          {embedUrl ? (
+            <iframe
+              src={embedUrl}
+              title={block.videoTitle || 'Video guide'}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="w-full h-full border-0"
+            />
+          ) : (
+            <video
+              src={url}
+              controls
+              playsInline
+              className="w-full h-full object-contain"
+            >
+              Your browser does not support HTML5 video.
+            </video>
+          )}
+        </div>
+
+        {(block.caption || block.lead) && (
+          <figcaption className="p-3.5 bg-slate-50 border-t border-slate-100 text-xs text-slate-600 font-medium">
+            {block.caption || block.lead}
+          </figcaption>
+        )}
+      </figure>
+    );
+  };
+
   const renderBlock = (block: ArticleContentBlock) => {
     switch (block.type) {
       case 'paragraph':
@@ -258,10 +321,11 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({
                       </button>
                     </div>
 
-                    {step.screenshotId && (
+                    {(step.screenshotId || step.imageUrl) && (
                       <div className="mt-4">
                         <VisualScreenshotCard 
                           screenshotId={step.screenshotId} 
+                          imageUrl={step.imageUrl}
                           caption={step.caption} 
                         />
                       </div>
@@ -274,16 +338,21 @@ export const ArticleRenderer: React.FC<ArticleRendererProps> = ({
         );
 
       case 'screenshot':
+      case 'image':
         return (
-          <div key={block.id}>
-            {block.screenshotId && (
+          <div key={block.id} className="my-6">
+            {(block.screenshotId || block.imageUrl) && (
               <VisualScreenshotCard 
                 screenshotId={block.screenshotId} 
+                imageUrl={block.imageUrl}
                 caption={block.caption} 
               />
             )}
           </div>
         );
+
+      case 'video':
+        return renderVideoBlock(block);
 
       case 'callout':
         return block.callout ? (

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="falgoonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0D9488" />
+      <stop offset="50%" stop-color="#059669" />
+      <stop offset="100%" stop-color="#0284C7" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Background rounded squircle -->
+  <rect width="64" height="64" rx="16" fill="url(#falgoonGrad)" />
+  <rect x="1" y="1" width="62" height="62" rx="15" stroke="white" stroke-opacity="0.2" stroke-width="1.5" />
+  
+  <!-- Modern Geometric 'F' Glyph -->
+  <path d="M19 16C19 14.8954 19.8954 14 21 14H43C44.1046 14 45 14.8954 45 16C45 17.1046 44.1046 18 43 18H25V26H39C40.1046 26 41 26.8954 41 28C41 29.1046 40.1046 30 39 30H25V46C25 47.1046 24.1046 48 23 48C21.8954 48 21 47.1046 21 46V16Z" fill="white" filter="url(#shadow)" />
+  
+  <!-- Interactive Analytics Accent Node -->
+  <circle cx="42" cy="42" r="5" fill="#38BDF8" />
+  <circle cx="42" cy="42" r="2.2" fill="white" />
+</svg>

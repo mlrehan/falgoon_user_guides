@@ -1,5 +1,6 @@
 import React from 'react';
 import { useDocs } from '../context/DocsContext';
+import { FalgoonLogo } from './FalgoonLogo';
 import { 
   Search, 
   Settings, 
@@ -22,7 +23,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab }) => 
     setSearchOpen, 
     isAdminMode, 
     setIsAdminMode, 
-    setIsSimulatorOpen, 
     selectSoftware,
     softwareApps,
     selectedSoftwareId
@@ -44,23 +44,13 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab }) => 
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          {/* Zone 1: Single text element wordmark */}
+          {/* Zone 1: Brand Logo & Wordmark */}
           <div className="flex items-center gap-3">
             <button 
               onClick={handleHomeClick}
-              className="flex items-center gap-2.5 text-left group focus-visible:outline-teal-600 rounded-lg p-1"
+              className="flex items-center gap-2.5 text-left group focus-visible:outline-teal-600 rounded-lg p-1 cursor-pointer"
             >
-              <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:bg-teal-700 transition-colors">
-                F
-              </div>
-              <div>
-                <span className="text-base font-bold tracking-tight text-slate-900 group-hover:text-teal-700 transition-colors flex items-center gap-1.5">
-                  Falgoon Docs Hub
-                </span>
-                <span className="block text-[11px] text-slate-500 font-medium">
-                  Multi-App User Guidelines &amp; Portal
-                </span>
-              </div>
+              <FalgoonLogo variant="normal" size="md" showSubtitle={true} />
             </button>
           </div>
 
@@ -134,7 +124,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab }) => 
             {/* Search Button */}
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-500 bg-slate-100 hover:bg-slate-200/80 rounded-lg transition-colors border border-slate-200/80"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-500 bg-slate-100 hover:bg-slate-200/80 rounded-lg transition-colors border border-slate-200/80 cursor-pointer"
               aria-label="Search documentation"
             >
               <Search className="w-3.5 h-3.5 text-slate-500" />
@@ -142,16 +132,6 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab }) => 
               <kbd className="hidden sm:inline-block font-mono text-[10px] bg-white text-slate-600 px-1.5 py-0.5 rounded border border-slate-200">
                 /
               </kbd>
-            </button>
-
-            {/* Live Assistant Simulator */}
-            <button
-              onClick={() => setIsSimulatorOpen(true)}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-teal-800 bg-teal-50 hover:bg-teal-100 border border-teal-200/80 rounded-lg transition-colors"
-              title="Experience live chatbot widget"
-            >
-              <Bot className="w-3.5 h-3.5 text-teal-600" />
-              <span>Test Chatbot</span>
             </button>
 
             {/* Admin CMS Mode Toggle */}

@@ -10,6 +10,10 @@ import {
   Layers, 
   FileText, 
   Image, 
+  Video,
+  Film,
+  Camera,
+  Play,
   Download, 
   Upload, 
   RotateCcw, 
@@ -70,6 +74,29 @@ export const AdminPortal: React.FC = () => {
   const [articleStep2Title, setArticleStep2Title] = useState('');
   const [articleStep2Text, setArticleStep2Text] = useState('');
   const [articleVersion, setArticleVersion] = useState('v1.0');
+
+  // Media Attachment State for New Article
+  const [mediaType, setMediaType] = useState<'none' | 'figure' | 'custom-image' | 'video'>('none');
+  const [selectedFigureId, setSelectedFigureId] = useState<string>('01-login');
+  const [customImageUrl, setCustomImageUrl] = useState<string>('');
+  const [videoUrl, setVideoUrl] = useState<string>('');
+  const [videoTitle, setVideoTitle] = useState<string>('');
+  const [mediaCaption, setMediaCaption] = useState<string>('');
+  const [step1FigureId, setStep1FigureId] = useState<string>('');
+  const [step2FigureId, setStep2FigureId] = useState<string>('');
+
+  const handleImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setCustomImageUrl(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   // JSON Import notification
   const [importStatus, setImportStatus] = useState<string | null>(null);
@@ -182,6 +209,31 @@ export const AdminPortal: React.FC = () => {
       }
     ];
 
+    // Attached Media Block (Figure, Custom Image, or Video)
+    if (mediaType === 'figure' && selectedFigureId) {
+      blocks.push({
+        id: `blk-media-${Date.now()}`,
+        type: 'screenshot',
+        screenshotId: selectedFigureId,
+        caption: mediaCaption || 'System interface walkthrough'
+      });
+    } else if (mediaType === 'custom-image' && customImageUrl) {
+      blocks.push({
+        id: `blk-media-${Date.now()}`,
+        type: 'image',
+        imageUrl: customImageUrl,
+        caption: mediaCaption || 'Illustrated operational procedure'
+      });
+    } else if (mediaType === 'video' && videoUrl) {
+      blocks.push({
+        id: `blk-media-${Date.now()}`,
+        type: 'video',
+        videoUrl: videoUrl.trim(),
+        videoTitle: videoTitle.trim() || 'Video Walkthrough & Tutorial',
+        caption: mediaCaption || 'Follow the step-by-step video guide'
+      });
+    }
+
     if (articleStep1Title) {
       blocks.push({
         id: 'blk-steps',
@@ -191,12 +243,14 @@ export const AdminPortal: React.FC = () => {
           {
             stepNumber: 1,
             title: articleStep1Title,
-            instruction: articleStep1Text || 'Complete this task step as instructed.'
+            instruction: articleStep1Text || 'Complete this task step as instructed.',
+            screenshotId: step1FigureId || undefined
           },
           ...(articleStep2Title ? [{
             stepNumber: 2,
             title: articleStep2Title,
-            instruction: articleStep2Text || 'Confirm and finalize the operation.'
+            instruction: articleStep2Text || 'Confirm and finalize the operation.',
+            screenshotId: step2FigureId || undefined
           }] : [])
         ]
       });
@@ -227,6 +281,13 @@ export const AdminPortal: React.FC = () => {
     setArticleStep1Text('');
     setArticleStep2Title('');
     setArticleStep2Text('');
+    setMediaType('none');
+    setCustomImageUrl('');
+    setVideoUrl('');
+    setVideoTitle('');
+    setMediaCaption('');
+    setStep1FigureId('');
+    setStep2FigureId('');
   };
 
   const handleExportJSON = () => {
@@ -797,6 +858,185 @@ export const AdminPortal: React.FC = () => {
                 </div>
               </div>
 
+              {/* Visual Media & Attachments Section */}
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-slate-800 text-[11px] uppercase tracking-wider flex items-center gap-1.5">
+                    <Camera className="w-3.5 h-3.5 text-teal-600" />
+                    <span>Attach Media to Article (Optional)</span>
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-semibold">Images, Videos, Figures</span>
+                </div>
+
+                {/* Media Type Selector Pills */}
+                <div className="grid grid-cols-4 gap-1 bg-slate-200/70 p-1 rounded-xl text-[11px]">
+                  <button
+                    type="button"
+                    onClick={() => setMediaType('none')}
+                    className={`py-1.5 rounded-lg font-semibold transition-colors cursor-pointer text-center ${
+                      mediaType === 'none' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    None
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMediaType('figure')}
+                    className={`py-1.5 rounded-lg font-semibold transition-colors cursor-pointer text-center ${
+                      mediaType === 'figure' ? 'bg-white text-teal-800 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Figure (38)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMediaType('custom-image')}
+                    className={`py-1.5 rounded-lg font-semibold transition-colors cursor-pointer text-center ${
+                      mediaType === 'custom-image' ? 'bg-white text-teal-800 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Custom Image
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMediaType('video')}
+                    className={`py-1.5 rounded-lg font-semibold transition-colors cursor-pointer text-center ${
+                      mediaType === 'video' ? 'bg-white text-rose-800 shadow-2xs font-bold' : 'text-slate-600 hover:text-slate-900'
+                    }`}
+                  >
+                    Video Guide
+                  </button>
+                </div>
+
+                {/* Figure Selection */}
+                {mediaType === 'figure' && (
+                  <div className="space-y-2 pt-1">
+                    <label className="font-semibold text-slate-700 block text-[11px]">
+                      Select from System Figure Library (38 High-Fidelity UI Screens):
+                    </label>
+                    <select
+                      value={selectedFigureId}
+                      onChange={(e) => setSelectedFigureId(e.target.value)}
+                      className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-teal-600 font-mono"
+                    >
+                      {mediaAssets.map((asset) => (
+                        <option key={asset.id} value={asset.id}>
+                          {asset.figureLabel} ({asset.id}) — {asset.title} [{asset.category}]
+                        </option>
+                      ))}
+                    </select>
+
+                    <div>
+                      <label className="text-slate-600 block text-[11px] font-medium mb-1">Figure Caption / Annotation</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Figure 1: Admin Console and Navigation Menu"
+                        value={mediaCaption}
+                        onChange={(e) => setMediaCaption(e.target.value)}
+                        className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Custom Image Upload or URL */}
+                {mediaType === 'custom-image' && (
+                  <div className="space-y-2 pt-1">
+                    <label className="font-semibold text-slate-700 block text-[11px]">
+                      Upload Image File or Enter Web Image URL:
+                    </label>
+                    
+                    <div className="flex gap-2 items-center">
+                      <label className="flex-1 cursor-pointer">
+                        <div className="p-2 border-2 border-dashed border-teal-300 hover:border-teal-500 rounded-xl bg-teal-50/40 text-center text-teal-800 text-xs font-semibold flex items-center justify-center gap-1.5">
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>Choose file from device...</span>
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageFileUpload}
+                          className="hidden"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400 font-bold uppercase">Or URL</span>
+                      <input
+                        type="url"
+                        placeholder="https://example.com/screenshot.png"
+                        value={customImageUrl}
+                        onChange={(e) => setCustomImageUrl(e.target.value)}
+                        className="flex-1 p-2 bg-white border border-slate-300 rounded-xl text-xs"
+                      />
+                    </div>
+
+                    {customImageUrl && (
+                      <div className="mt-2 p-2 bg-slate-900 rounded-xl text-center">
+                        <span className="text-[10px] text-slate-400 block mb-1">Image Preview:</span>
+                        <img
+                          src={customImageUrl}
+                          alt="Uploaded preview"
+                          className="max-h-32 mx-auto rounded object-contain"
+                        />
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="text-slate-600 block text-[11px] font-medium mb-1">Image Caption</label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Illustrated system flow for this procedure"
+                        value={mediaCaption}
+                        onChange={(e) => setMediaCaption(e.target.value)}
+                        className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Video Walkthrough */}
+                {mediaType === 'video' && (
+                  <div className="space-y-2 pt-1">
+                    <label className="font-semibold text-slate-700 block text-[11px]">
+                      Video Tutorial URL (YouTube, Loom, Vimeo, or MP4):
+                    </label>
+                    <input
+                      type="url"
+                      required={mediaType === 'video'}
+                      placeholder="https://www.youtube.com/watch?v=... or https://www.loom.com/share/..."
+                      value={videoUrl}
+                      onChange={(e) => setVideoUrl(e.target.value)}
+                      className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-rose-500 font-mono"
+                    />
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-slate-600 block text-[11px] font-medium mb-1">Video Title</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 2-Minute Step-by-Step Walkthrough"
+                          value={videoTitle}
+                          onChange={(e) => setVideoTitle(e.target.value)}
+                          className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-slate-600 block text-[11px] font-medium mb-1">Caption / Summary</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Watch how to configure room ratios in real time"
+                          value={mediaCaption}
+                          onChange={(e) => setMediaCaption(e.target.value)}
+                          className="w-full p-2 bg-white border border-slate-300 rounded-xl text-xs"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Step 1 */}
               <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                 <span className="font-bold text-slate-800 block text-[11px] uppercase tracking-wider">Step 1 Instructions</span>
@@ -814,6 +1054,21 @@ export const AdminPortal: React.FC = () => {
                   onChange={(e) => setArticleStep1Text(e.target.value)}
                   className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs"
                 />
+                <div>
+                  <label className="text-[10px] text-slate-500 font-semibold block mb-0.5">Attach Screenshot to Step 1 (Optional)</label>
+                  <select
+                    value={step1FigureId}
+                    onChange={(e) => setStep1FigureId(e.target.value)}
+                    className="w-full p-1.5 bg-white border border-slate-300 rounded-lg text-[11px]"
+                  >
+                    <option value="">No step screenshot</option>
+                    {mediaAssets.map((asset) => (
+                      <option key={asset.id} value={asset.id}>
+                        {asset.figureLabel}: {asset.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               {/* Step 2 */}
@@ -833,6 +1088,21 @@ export const AdminPortal: React.FC = () => {
                   onChange={(e) => setArticleStep2Text(e.target.value)}
                   className="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs"
                 />
+                <div>
+                  <label className="text-[10px] text-slate-500 font-semibold block mb-0.5">Attach Screenshot to Step 2 (Optional)</label>
+                  <select
+                    value={step2FigureId}
+                    onChange={(e) => setStep2FigureId(e.target.value)}
+                    className="w-full p-1.5 bg-white border border-slate-300 rounded-lg text-[11px]"
+                  >
+                    <option value="">No step screenshot</option>
+                    {mediaAssets.map((asset) => (
+                      <option key={asset.id} value={asset.id}>
+                        {asset.figureLabel}: {asset.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
