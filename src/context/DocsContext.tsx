@@ -47,6 +47,8 @@ interface DocsContextType {
 
 const DocsContext = createContext<DocsContextType | undefined>(undefined);
 
+const CURRENT_DOCS_VERSION = 'v1.6_full_18_tenant_chapters';
+
 export const DocsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [softwareApps, setSoftwareApps] = useState<SoftwareApp[]>(() => {
     const saved = localStorage.getItem('falgoon_software_apps');
@@ -57,6 +59,11 @@ export const DocsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [categories, setCategories] = useState<Category[]>(() => {
+    const version = localStorage.getItem('falgoon_docs_version');
+    if (version !== CURRENT_DOCS_VERSION) {
+      localStorage.setItem('falgoon_docs_version', CURRENT_DOCS_VERSION);
+      return [...ADMIN_CATEGORIES, ...OTHER_SOFTWARE_CATEGORIES];
+    }
     const saved = localStorage.getItem('falgoon_categories');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }
@@ -65,6 +72,11 @@ export const DocsProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [articles, setArticles] = useState<Article[]>(() => {
+    const version = localStorage.getItem('falgoon_docs_version');
+    if (version !== CURRENT_DOCS_VERSION) {
+      localStorage.setItem('falgoon_docs_version', CURRENT_DOCS_VERSION);
+      return [...FALGOON_ADMIN_ARTICLES, ...OTHER_SOFTWARE_ARTICLES];
+    }
     const saved = localStorage.getItem('falgoon_articles');
     if (saved) {
       try { return JSON.parse(saved); } catch (e) { console.error(e); }

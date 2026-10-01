@@ -543,5 +543,33 @@ export const MEDIA_ASSETS: MediaAsset[] = [
       screenName: 'Website View · Answer with Sources',
       summary: 'Complete answer showing prices £420, [1], [2], expandable "2 web pages" source list.'
     }
+  },
+  {
+    id: '12-help-menu',
+    title: 'Left-Hand Navigation & Help Menu',
+    figureLabel: 'Figure 3.3',
+    description: 'The left-hand menu with the Tenant, Account, Help and Data analysis groups; Help contains User guide with a link icon beside it.',
+    category: 'Navigation',
+    tags: ['menu', 'navigation', 'help', 'sidebar'],
+    aspectRatio: '16:9',
+    type: 'screenshot',
+    previewDetails: {
+      screenName: 'Sidebar · Navigation Menu',
+      summary: 'Menu showing Tenant, Account, Help, and Data Analysis sections with User Guide link.'
+    }
+  },
+  {
+    id: '11-widget-safeguarding',
+    title: 'Chatbot Safeguarding Emergency Override',
+    figureLabel: 'Figure 13.1',
+    description: 'The chatbot responding to an emergency or safeguarding concern by providing immediate telephone numbers and instructions to seek urgent help.',
+    category: 'Safeguarding',
+    tags: ['safeguarding', 'emergency', 'override', 'protection', 'widget'],
+    aspectRatio: '16:9',
+    type: 'screenshot',
+    previewDetails: {
+      screenName: 'Website Widget · Safeguarding Response',
+      summary: 'Chatbot prioritising urgent contact details and DSL contacts over knowledge base search.'
+    }
   }
 ];

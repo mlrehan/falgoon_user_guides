@@ -35,19 +35,25 @@ export const VisualScreenshotCard: React.FC<VisualScreenshotCardProps> = ({
   caption 
 }) => {
   const { mediaAssets, openScreenshot } = useDocs();
+  const [imageFailed, setImageFailed] = React.useState(false);
   const asset = screenshotId ? mediaAssets.find((m) => m.id === screenshotId) : undefined;
-  const effectiveImage = imageUrl || (screenshotId?.startsWith('http') || screenshotId?.startsWith('data:') ? screenshotId : null);
+  
+  const effectiveImage = imageUrl || 
+    (screenshotId?.startsWith('http') || screenshotId?.startsWith('data:') 
+      ? screenshotId 
+      : (screenshotId ? `/screenshots/${screenshotId}.webp` : null));
 
   // Render simulated UI representation of the actual screenshot
   const renderSimulatedScreen = () => {
-    if (effectiveImage) {
+    if (effectiveImage && !imageFailed) {
       return (
-        <div className="bg-slate-950 p-2 flex items-center justify-center min-h-[220px]">
+        <div className="bg-slate-900/90 p-2 sm:p-4 flex items-center justify-center min-h-[220px] rounded-lg">
           <img 
             src={effectiveImage} 
             alt={caption || asset?.title || 'User guide illustration'} 
-            className="max-h-[500px] w-auto max-w-full mx-auto object-contain rounded-lg shadow-sm"
+            className="max-h-[520px] w-auto max-w-full mx-auto object-contain rounded-lg shadow-md border border-slate-800/80"
             loading="lazy"
+            onError={() => setImageFailed(true)}
           />
         </div>
       );
